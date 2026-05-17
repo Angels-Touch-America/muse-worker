@@ -2,12 +2,12 @@
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ffmpeg
 
-COPY worker.py /app/worker.py
-COPY assets /app/assets
-COPY requirements.txt /app/requirements.txt
+COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
 
 CMD ["python", "worker.py"]
