@@ -5,6 +5,12 @@ import cloudinary
 import cloudinary.uploader
 import os
 import uuid
+import re
+
+
+def redact(text):
+    """Hide callback keys (?k=...) before anything is printed to RunPod's logs."""
+    return re.sub(r"([?&]k=)[^&\s'\"]+", r"\1***", str(text))
 
 # -----------------------------------
 # CLOUDINARY CONFIG
@@ -24,7 +30,7 @@ def safe_post(url, payload):
 
     try:
 
-        print(f"📡 CALLBACK → {url}")
+        print(f"📡 CALLBACK → {redact(url)}")
 
         response = requests.post(
             url,
@@ -36,7 +42,7 @@ def safe_post(url, payload):
 
     except Exception as e:
 
-        print(f"❌ CALLBACK ERROR: {str(e)}")
+        print(f"❌ CALLBACK ERROR: {redact(e)}")
 
 
 # -----------------------------------
@@ -251,7 +257,7 @@ def handler(event):
         input_data = event.get("input", {})
 
         print("📦 JOB RECEIVED:")
-        print(input_data)
+        print(redact(input_data))
 
         # -----------------------------------
         # MERGE MODE
@@ -292,4 +298,4 @@ def handler(event):
 
 runpod.serverless.start({
     "handler": handler
-})
+})
